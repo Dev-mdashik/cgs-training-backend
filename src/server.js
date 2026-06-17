@@ -1,32 +1,22 @@
-import http from 'http';
-import {home} from './pages/home.js';
-import {about} from './pages/about.js';
-import {notFound} from './pages/notFound.js';
-import {statusCode} from './http/statusCode.js';
+import express from 'express';
+import cors from 'cors';
+import { fileURLToPath } from 'url';
+import path from 'path'
+import productRouter from './router/productRouter.js';
 
-const server = http.createServer((req, res) => {    
+const app = express();
 
-     if (req.url === '/') {
-        statusCode(res, 200);
-        res.end('Welcome to the CGS Server');    
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-     } else if (req.url === '/home') {
-        statusCode(res, 200);
-        home(req, res);         
-      
-    } else if (req.url === '/about') {
-        statusCode(res, 200);
-        about(req, res);       
+app.use('/images',express.static(path.join(__dirname, 'assets/images')));
 
-    } else {
-        statusCode(res, 404);
-        notFound(req, res);
-        
-    }
-});
+app.use(cors());
+app.use(express.json());
 
+app.use('/api', productRouter);
 const PORT = 3000;
 
-server.listen(PORT, ()=> {
+app.listen(PORT, ()=> {
     console.log(`Server started on port ${PORT}`);
 })
