@@ -14,12 +14,12 @@ const userSchema = new mongoose.Schema(
             unique: true,
             trim: true,
             maxlength: [50, "Email shouldn't be upto 50 characters"]
-        },
-        mobile: {
-            type: Number,
-            required: [true, "Mobile number is required"],
-            trim: true,
-            minlength: [10, "Mobile number must be minimum 10 characters"]
+        },       
+        role: {
+            type: String,
+            required: false,            
+            enum: ['user', 'admin'],
+            default: 'user'
         },
         password: {
             type: String,
