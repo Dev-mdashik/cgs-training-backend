@@ -4,9 +4,56 @@ import ProductModel from '../models/productModel.js';
 
 
 export const getProduct = async (req, res) => {
+    const filterProduct = {};
     try {
-        const data = await ProductModel.find({});
-        res.status(200).json({status: 'Success', msg: 'Data Retrieved Successfully', data});
+        const {search, category, minPrice, maxPrice, page = 1, limit = 10} = req.query;
+
+        // search
+        if(search){
+            filterProduct.name = {
+                $regex: search, $options: 'i'
+            };            
+        }       
+
+        
+        // filter
+        if(category){
+            const categories = category.split(',');
+            filterProduct.category = {
+                $in : categories
+            }
+        }
+
+        if(minPrice || maxPrice){
+            filterProduct.price = {}
+            console.log('true')
+            if(minPrice){
+                filterProduct.price.$gte = Number(minPrice);
+                console.log('minPrice')
+            }
+            if(maxPrice){
+                filterProduct.price.$lte = Number(maxPrice);
+                console.log('maxPrice')
+            }
+        }        
+
+        
+        // pagination
+        const pageNumber = Math.max(Number(page), 1);
+        const pageLimit = Math.max(Number(limit), 1);
+        const skip = (pageNumber - 1) * pageLimit;
+        const total = await ProductModel.countDocuments(filterProduct);        
+
+        const data = await ProductModel.find(filterProduct).skip(skip).limit(pageLimit);
+        res.status(200).json({
+            status: 'Success', 
+            msg: 'Data Retrieved Successfully',
+            limit: pageLimit,
+            page: pageNumber,
+            totalProducts: total,
+            totalPages: Math.ceil( total / pageLimit ),                        
+            data: data,            
+        });
     } catch (error) {
         res.status(500).json({status: 'Failed', msg: `${error.message}`});        
     }
