@@ -1,0 +1,14 @@
+{
+    "products" : [
+            {"id": 1, "name": "Full Hand T-Shirt", "price": "$500", "brand": "U.S Polo"},
+            {"id": 2, "name": "Polo T-Shirt", "price": "$250", "brand": "Louis Philip"},
+            {"id": 3, "name": "Track Pant", "price": "$125", "brand": "U.S Polo"},    
+            {"id": 4, "name": "Watch blicks", "price": "$125", "brand": "Rolex"},    
+            {"id": 5, "name": "Work Bag", "price": "$125", "brand": "Rubeen"},    
+            {"id": 6, "name": "Full Sleeve", "price": "$120", "brand": "Wrogn"},
+            {"id": 7, "name": "Silver Watch", "price": "$1000", "brand": "Rado"},    
+            {"id": 8, "name": "Face Mask", "price": "$125", "brand": "U.S Polo"},        
+            {"id": 9, "name": "Men's Cap", "price": "$125", "brand": "Happy"},        
+            {"id": 10, "name": "Full Hand T-Shirt", "price": "$125", "brand": "U.S Polo"}
+    ]
+}

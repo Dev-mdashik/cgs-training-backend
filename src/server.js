@@ -1,32 +1,37 @@
-import http from 'http';
-import {home} from './pages/home.js';
-import {about} from './pages/about.js';
-import {notFound} from './pages/notFound.js';
-import {statusCode} from './http/statusCode.js';
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import { fileURLToPath } from 'url';
+import path from 'path'
+import authRouter from './router/authRouter.js';
+import productRouter from './router/productRouter.js';
+import userRouter from './router/userRouter.js';
+import connectDB from './config/db.js';
 
-const server = http.createServer((req, res) => {    
+// CREATE INSTANCE
+const app = express();
 
-     if (req.url === '/') {
-        statusCode(res, 200);
-        res.end('Welcome to the CGS Server');    
+// DEFINE
+dotenv.config();
+connectDB();
 
-     } else if (req.url === '/home') {
-        statusCode(res, 200);
-        home(req, res);         
-      
-    } else if (req.url === '/about') {
-        statusCode(res, 200);
-        about(req, res);       
+// FILE PATH
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-    } else {
-        statusCode(res, 404);
-        notFound(req, res);
-        
-    }
-});
+// BUILT-IN MIDDLEWARE
+app.use('/images',express.static(path.join(__dirname, 'assets/images')));
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
+// API ROUTES
+app.use('/api', authRouter);
+app.use('/api', productRouter);
+app.use('/api', userRouter);
+
+// PORT
 const PORT = 3000;
-
-server.listen(PORT, ()=> {
+app.listen(PORT, ()=> {
     console.log(`Server started on port ${PORT}`);
 })
