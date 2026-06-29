@@ -48,7 +48,9 @@ export const login = async (req, res) => {
         const credentials = {userId: user._id, role: user.role}
         const token = await jwt.sign(credentials, process.env.SECRET_KEY , {expiresIn: '1d'})
 
-        res.status(200).json({success: true, msg: 'User logged successfully', data: {token, user}});
+        const userDetail = {name: user.name, email: user.email, role: user.role, id:user._id}
+        
+        res.status(200).json({success: true, msg: 'User logged successfully', data: {token, user: userDetail}});
     } catch (error) {
         res.status(500).json({success: false, msg: error.message})      
     }

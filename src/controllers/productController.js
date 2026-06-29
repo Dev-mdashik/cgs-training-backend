@@ -6,7 +6,7 @@ import ProductModel from '../models/productModel.js';
 export const getProduct = async (req, res) => {
     const filterProduct = {};
     try {
-        const {search, category, minPrice, maxPrice, page = 1, limit = 10} = req.query;
+        const {search, category, brand, minPrice, maxPrice, page = 1, limit = 10} = req.query;
 
         // search
         if(search){
@@ -22,6 +22,11 @@ export const getProduct = async (req, res) => {
             filterProduct.category = {
                 $in : categories
             }
+        }
+
+        if(brand){     
+            const allBrands = brand.split(',');            
+            filterProduct.brand = { $in: allBrands };
         }
 
         if(minPrice || maxPrice){
@@ -43,7 +48,7 @@ export const getProduct = async (req, res) => {
         const pageLimit = Math.max(Number(limit), 1);
         const skip = (pageNumber - 1) * pageLimit;
         const total = await ProductModel.countDocuments(filterProduct);        
-
+        const allBrands = await ProductModel.distinct('brand');           
         const data = await ProductModel.find(filterProduct).skip(skip).limit(pageLimit);
         res.status(200).json({
             status: 'Success', 
@@ -51,11 +56,22 @@ export const getProduct = async (req, res) => {
             limit: pageLimit,
             page: pageNumber,
             totalProducts: total,
-            totalPages: Math.ceil( total / pageLimit ),                        
+            totalPages: Math.ceil( total / pageLimit ), 
+            allBrands,                       
             data: data,            
         });
     } catch (error) {
         res.status(500).json({status: 'Failed', msg: `${error.message}`});        
+    }
+}
+
+export const getProductById = async (req, res) => {
+    try{
+        const {id} = req.params;
+        const data = await ProductModel.findById(id);
+        return res.status(200).json({status: 'Success', msg: 'Data retrieved successfully', data})
+    } catch (err) {
+        return res.status(500).json({status: 'Failed', msg: `${err.message}`});        
     }
 }
 
@@ -71,7 +87,7 @@ export const addProduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
     try {
         const {id} = req.params;        
-        const updatedProduct = await ProductModel.findByIdAndUpdate(id, req.body);
+        const updatedProduct = await ProductModel.findByIdAndUpdate(id, req.body, {new: true});
 
         if(!updatedProduct) {
             res.status(404).json({status: 'Failed', msg: 'ID Not Found'})
@@ -85,7 +101,7 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
     try {       
             const {id} = req.params;    
-            const deltedProduct = await ProductModel.findByIdAndDelete(id);
+            const deltedProduct = await ProductModel.findByIdAndDelete(id, {new: true});
 
             if(!deltedProduct) {
                  res.status(404).json({status: 'Failed', msg: 'ID Not Found'})

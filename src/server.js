@@ -7,7 +7,6 @@ import authRouter from './router/authRouter.js';
 import productRouter from './router/productRouter.js';
 import userRouter from './router/userRouter.js';
 import connectDB from './config/db.js';
-import { protect } from './middleware/auth.middleware.js';
 
 // CREATE INSTANCE
 const app = express();
@@ -28,7 +27,6 @@ app.use(express.urlencoded({extended: true}));
 
 // API ROUTES
 app.use('/api', authRouter);
-app.use(protect);
 app.use('/api', productRouter);
 app.use('/api', userRouter);
 
