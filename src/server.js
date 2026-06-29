@@ -13,7 +13,6 @@ const app = express();
 
 // DEFINE
 dotenv.config();
-connectDB();
 
 // FILE PATH
 const __filename = fileURLToPath(import.meta.url);
@@ -32,6 +31,17 @@ app.use('/api', userRouter);
 
 // PORT
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, ()=> {
-    console.log(`Server started on port ${PORT}`);
-})
+
+const startServer = async () => {
+    try {
+        await connectDB();
+
+        app.listen(PORT, () => {
+            console.log(`Server started on port ${PORT}`);
+        });
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+startServer();
